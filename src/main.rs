@@ -66,13 +66,17 @@ pub struct DeviceConfig {
 }
 
 #[derive(Parser)]
-#[command(version, about, long_about = None)]
+#[command(
+    version,
+    about,
+    long_about = "PLC LOG is a software utility that provides fast data logging functionality.\n2025 All rights reserved."
+)]
 struct Cli {
     /// Optional name to operate on
     name: Option<String>,
 
     #[command(subcommand)]
-    command: Option<Commands>,
+    command: Commands,
 }
 
 #[derive(Subcommand)]
@@ -97,16 +101,16 @@ fn main() {
     }
 
     match &cli.command {
-        Some(Commands::Run { list, config }) => {
+        Commands::Run { list, config } => {
             // Process command and handle errors.
             process_run_cmd(list, config);
         }
-        Some(Commands::CreateConfig) => {
+        Commands::CreateConfig => {
             // Create a sample config for reference.
             process_create_config_cmd();
         }
 
-        None => {}
+        _ => {}
     }
 
     loop {}
