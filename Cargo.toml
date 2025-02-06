@@ -1,0 +1,14 @@
+[package]
+name = "plclog"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.95"
+chrono = "0.4.39"
+clap = { version = "4.5.27", features = ["derive"] }
+ron = "0.8.1"
+rusqlite = { version = "0.33.0", features = ["bundled"] }
+serde = { version = "1.0.217", features = ["derive"] }
+tokio-modbus = { version = "0.16.1", features = ["tcp-sync"] }
+toml = "0.8.19"

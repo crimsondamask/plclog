@@ -1,0 +1,39 @@
+(
+    poll_period: 1,
+    devices: [
+        /*[0]*/ (
+            name: "S7_1200",
+            device_type: ModbusTcp((
+                ip: "127.0.0.1",
+                port: 5502,
+                tags: [
+                    (name: "FLP", description: "PSIG", address: 0, value: RealHolding),
+                    (name: "FLT", description: "DegC", address: 2, value: RealHolding),
+                    (name: "FLR", description: "M3/h", address: 4, value: RealHolding),
+                    (name: "HPP", description: "PSIG", address: 6, value: RealHolding),
+                    (name: "BPP", description: "PSIG", address: 24, value: RealHolding),
+                    (name: "DTL", description: "Percent", address: 26, value: RealHolding),
+                    (name: "FUDP", description: "PSIG", address: 28, value: RealHolding),
+                    (name: "WTL", description: "Percent", address: 30, value: RealHolding),
+                ],
+            )),
+        ),
+        /*[1]*/ (
+            name: "S7_1500",
+            device_type: ModbusTcp((
+                ip: "127.0.0.1",
+                port: 5502,
+                tags: [
+                    (name: "LT1-1", description: "mmH2O", address: 0, value: RealHolding),
+                    (name: "PT1-1", description: "BARG", address: 2, value: RealHolding),
+                    (name: "PT2-1", description: "BARG", address: 4, value: RealHolding),
+                    (name: "PT1-2", description: "BARG", address: 6, value: RealHolding),
+                    (name: "PT2-2", description: "BARG", address: 8, value: RealHolding),
+                    (name: "PT2-3", description: "BARG", address: 10, value: RealHolding),
+                    (name: "PT3-1", description: "BARG", address: 12, value: RealHolding),
+                ],
+            )),
+        ),
+    ],
+    database_path: "./Logger.db",
+)
