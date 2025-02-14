@@ -1,5 +1,5 @@
 (
-    poll_period: 1,
+    poll_period: 5,
     devices: [
         /*[0]*/ (
             name: "S7_1200",

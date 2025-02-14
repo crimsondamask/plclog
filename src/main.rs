@@ -219,10 +219,9 @@ fn poll_modbus_tcp(
                     Ok(mut ctx) => {
                         println!("Connected to device: {}", &device_name);
                         loop {
+                            let now = Local::now().naive_local();
+                            let first_timestamp = now.and_utc().timestamp();
                             if let Ok(conn) = mutex.lock() {
-                                let now = Local::now().naive_local();
-                                let timestamp = now.and_utc().timestamp();
-
                                 for tag in modbus_config.tags.iter() {
                                     {
                                         let tag = tag;
@@ -237,7 +236,7 @@ fn poll_modbus_tcp(
                                                     Ok(res) => {
                                                         conn.execute(
                                                     format!("INSERT INTO {} (id, timestamp, tag, description, value) VALUES (NULL, ?1, ?2, ?3, ?4)", &device_name).as_str(),
-                                                    (device_name ,timestamp, &tag.name, &tag.description, res.unwrap()[0] as f32),
+                                                    (device_name ,first_timestamp, &tag.name, &tag.description, res.unwrap()[0] as f32),
                                                 )
                                                 .unwrap();
                                                     }
@@ -270,7 +269,7 @@ fn poll_modbus_tcp(
                                                         let msb = res.unwrap()[1];
                                                         conn.execute(
                                                     format!("INSERT INTO {} (id, timestamp, tag, description, value) VALUES (NULL, ?1, ?2, ?3, ?4)", &device_name).as_str(),
-                                                    (timestamp, &tag.name, &tag.description, u16_to_float(lsb, msb)),
+                                                    (first_timestamp, &tag.name, &tag.description, u16_to_float(lsb, msb)),
                                                 )
                                                 .unwrap();
                                                     }
@@ -299,7 +298,20 @@ fn poll_modbus_tcp(
                                     };
                                 }
                             }
-                            std::thread::sleep(Duration::from_secs(poll_period as u64));
+                            let second_now = Local::now().naive_local();
+                            let second_timestamp = second_now.and_utc().timestamp();
+
+                            let lag = second_timestamp - first_timestamp;
+                            if lag > 0 {
+                                let poll_period = poll_period as i64 - lag;
+                                if poll_period >= 0 {
+                                    std::thread::sleep(Duration::from_secs((poll_period) as u64));
+                                } else {
+                                    std::thread::sleep(Duration::from_secs(0));
+                                }
+                            } else {
+                                std::thread::sleep(Duration::from_secs(poll_period as u64));
+                            }
                         }
                     }
                     Err(e) => {
